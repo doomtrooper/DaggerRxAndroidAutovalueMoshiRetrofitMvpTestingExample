@@ -1,0 +1,78 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "com.anandp.nasaapod"
+        minSdkVersion 14
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+}
+
+ext.depVersions = [
+        autoValue     : '1.5.2',
+        dagger        : '2.12',
+        supportLib    : '26.1.0',
+        playServices  : '11.6.0',
+        retrofit      : '2.3.0',
+        autoValueMoshi: '0.4.4',
+        butterknife   : '8.8.1',
+]
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support:support-v4:26.1.0'
+    compileOnly(
+            "com.google.auto.value:auto-value:$depVersions.autoValue",
+            "com.ryanharter.auto.value:auto-value-moshi-annotations:$depVersions.autoValueMoshi",
+    )
+    annotationProcessor(
+            "com.google.auto.value:auto-value:$depVersions.autoValue",
+            "com.google.dagger:dagger-compiler:$depVersions.dagger",
+            "com.ryanharter.auto.value:auto-value-moshi:$depVersions.autoValueMoshi",
+            "com.jakewharton:butterknife-compiler:$depVersions.butterknife",
+    )
+    implementation(
+            "com.android.support:appcompat-v7:$depVersions.supportLib",
+            "com.android.support:design:$depVersions.supportLib",
+            'com.android.support.constraint:constraint-layout:1.0.2',
+            'com.android.support:multidex:1.0.2',
+
+            'io.reactivex.rxjava2:rxjava:2.1.6',
+            'io.reactivex.rxjava2:rxandroid:2.0.1',
+            'com.jakewharton.timber:timber:4.6.0',
+            "com.jakewharton:butterknife:$depVersions.butterknife",
+            "com.google.dagger:dagger:$depVersions.dagger",
+            "com.squareup.retrofit2:retrofit:$depVersions.retrofit",
+            "com.squareup.retrofit2:adapter-rxjava2:$depVersions.retrofit",
+            "com.squareup.retrofit2:converter-moshi:$depVersions.retrofit",
+            "com.squareup.okhttp3:okhttp:3.9.1",
+            'com.squareup.moshi:moshi:1.5.0',
+    )
+    testImplementation(
+            'junit:junit:4.12',
+            'org.mockito:mockito-core:2.11.0'
+    )
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    androidTestImplementation('com.android.support.test:runner:1.0.1', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    provided 'com.ryanharter.auto.value:auto-value-moshi-annotations:0.4.5'
+}
