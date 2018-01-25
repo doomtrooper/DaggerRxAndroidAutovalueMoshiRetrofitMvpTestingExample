@@ -3,6 +3,7 @@ package com.anandp.nasaapod.di;
 import com.anandp.nasaapod.NasaApodApp;
 import com.anandp.nasaapod.data.RepositoryImpl;
 import com.anandp.nasaapod.ui.HomeActivity;
+import com.anandp.nasaapod.ui.mainscreen.GalleryHolder;
 import com.anandp.nasaapod.ui.mainscreen.GalleryPresenter;
 
 import javax.inject.Singleton;
@@ -20,4 +21,5 @@ public interface RootComponent {
     void inject(HomeActivity activity);
     void inject(GalleryPresenter presenter);
     void inject(RepositoryImpl repository);
+    void inject(GalleryHolder holder);
 }

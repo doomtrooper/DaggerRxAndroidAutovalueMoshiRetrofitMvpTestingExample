@@ -1,5 +1,7 @@
 package com.anandp.nasaapod.data;
 
+import android.support.annotation.Nullable;
+
 import com.google.auto.value.AutoValue;
 import com.squareup.moshi.Json;
 import com.squareup.moshi.JsonAdapter;
@@ -12,19 +14,22 @@ import com.squareup.moshi.Moshi;
 @AutoValue
 public abstract class GalleryItem {
     @Json(name = "date")
-    abstract String date();
+    public abstract String date();
+    @Nullable
     @Json(name = "explanation")
-    abstract String explanation();
+    public abstract String explanation();
+    @Nullable
     @Json(name = "hdurl")
-    abstract String hdurl();
+    public abstract String hdurl();
     @Json(name = "media_type")
-    abstract String mediaType();
+    public abstract String mediaType();
     @Json(name = "service_version")
-    abstract String serviceVersion();
+    public abstract String serviceVersion();
     @Json(name = "title")
-    abstract String title();
+    public abstract String title();
+    @Nullable
     @Json(name = "url")
-    abstract String url();
+    public abstract String url();
 
     public static GalleryItem create(String date, String explanation, String hdurl, String mediaType, String serviceVersion, String title, String url) {
         return new AutoValue_GalleryItem(date, explanation, hdurl, mediaType, serviceVersion, title, url);
@@ -32,5 +37,11 @@ public abstract class GalleryItem {
 
     public static JsonAdapter<GalleryItem> jsonAdapter(Moshi moshi) {
         return new AutoValue_GalleryItem.MoshiJsonAdapter(moshi);
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        GalleryItem galleryItem = (GalleryItem) obj;
+        return date().equalsIgnoreCase(galleryItem.date());
     }
 }

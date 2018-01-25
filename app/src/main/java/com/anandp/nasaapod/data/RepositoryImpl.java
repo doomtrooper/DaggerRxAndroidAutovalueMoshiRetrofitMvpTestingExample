@@ -4,9 +4,15 @@ import android.util.Log;
 
 import com.anandp.nasaapod.ApiService;
 import com.anandp.nasaapod.NasaApodApp;
+import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -26,18 +32,29 @@ public class RepositoryImpl implements Repository {
 
     @Inject
     ApiService apiService;
+    @Inject
+    Picasso picasso;
 
     @Override
     public Disposable getApodForDate(@Nullable String date, final LoadApodCallback listener) {
         NasaApodApp.getAppContext().getRootComponent().inject(this);
         List<Observable<GalleryItem>> list = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            list.add(apiService.getApod("QDITyi8e1uk6izr89dm7mpyfRG5kNSBCmmrZAqzY",null).subscribeOn(Schedulers.io()));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        Date fromDate = new Date();
+        fromDate.setMonth(fromDate.getMonth()-1);
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(fromDate);
+        for (int i = 0; i < 30; i++) {
+            list.add(apiService.getApod("QDITyi8e1uk6izr89dm7mpyfRG5kNSBCmmrZAqzY",sdf.format(calendar.getTime())).subscribeOn(Schedulers.io()));
+            calendar.add(Calendar.DATE,1);
         }
         Disposable disposable = Observable
                 .merge(list)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(item -> Log.i(TAG, item.toString()), e -> Log.e(TAG, e.getLocalizedMessage()));
+                .subscribe(item -> {
+                    Log.v(TAG, item.toString());
+                    listener.onGalleryItemsLoaded(item);
+                }, e -> Log.e(TAG, e.getLocalizedMessage()));
         return disposable;
     }
 }
