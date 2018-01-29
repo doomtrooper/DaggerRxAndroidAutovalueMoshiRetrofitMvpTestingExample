@@ -17,7 +17,8 @@ import com.anandp.nasaapod.R;
 import com.anandp.nasaapod.data.GalleryItem;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,8 +38,11 @@ public class GalleryFragment extends Fragment implements GalleryContract.View {
     RecyclerView mRecyclerView;
     Unbinder unbinder;
     private OnFragmentInteractionListener mListener;
-    private GalleryContract.Presenter mPresenter;
+    //private GalleryContract.Presenter mPresenter;
     private GalleryRecyclerAdapter mAdapter;
+
+    @Inject
+    GalleryPresenter mPresenter;
 
     public static GalleryFragment newInstance() {
         GalleryFragment fragment = new GalleryFragment();
@@ -59,17 +63,27 @@ public class GalleryFragment extends Fragment implements GalleryContract.View {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_gallery, container, false);
         unbinder = ButterKnife.bind(this, view);
-        mPresenter = new GalleryPresenter();
+        //mPresenter = new GalleryPresenter();
+        DaggerGalleryComponent.builder().galleryModule(new GalleryModule()).build().inject(this);
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (mAdapter.getItemCount()<=0) {
+            showItems(false);
+            showErrorView(false);
+            setLoadingIndicator(true);
+        }else {
+            showErrorView(false);
+            setLoadingIndicator(false);
+            showItems(true);
+        }
         int numberOfColumns = 3;
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity().getBaseContext(), numberOfColumns));
         mRecyclerView.setAdapter(mAdapter);
-        mPresenter.loadGalleryItems();
+        if (mAdapter.getItemCount()<=0) mPresenter.loadGalleryItems();
     }
 
     @Override
@@ -104,17 +118,26 @@ public class GalleryFragment extends Fragment implements GalleryContract.View {
 
     @Override
     public void setLoadingIndicator(boolean indicator) {
-
+        mProgressBar.setVisibility(indicator?View.VISIBLE:View.GONE);
     }
 
     @Override
-    public void showGallery(List<GalleryItem> items) {
+    public void showItems(boolean bool) {
+        mRecyclerView.setVisibility(bool?View.VISIBLE:View.GONE);
+    }
 
+    @Override
+    public void showErrorView(boolean bool) {
+        mErrorTv.setVisibility(bool?View.VISIBLE:View.GONE);
+        mRetryButton.setVisibility(bool?View.VISIBLE:View.GONE);
     }
 
     @Override
     public void showError(String error) {
-
+        showItems(false);
+        setLoadingIndicator(false);
+        showErrorView(true);
+        mErrorTv.setText(error);
     }
 
     @Override

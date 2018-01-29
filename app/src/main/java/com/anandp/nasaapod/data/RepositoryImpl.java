@@ -4,8 +4,10 @@ import android.util.Log;
 
 import com.anandp.nasaapod.ApiService;
 import com.anandp.nasaapod.NasaApodApp;
+import com.anandp.nasaapod.utils.Constants;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,23 +40,33 @@ public class RepositoryImpl implements Repository {
     @Override
     public Disposable getApodForDate(@Nullable String date, final LoadApodCallback listener) {
         NasaApodApp.getAppContext().getRootComponent().inject(this);
-        List<Observable<GalleryItem>> list = new ArrayList<>();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-        Date fromDate = new Date();
-        fromDate.setMonth(fromDate.getMonth()-1);
-        Calendar calendar = new GregorianCalendar();
-        calendar.setTime(fromDate);
-        for (int i = 0; i < 30; i++) {
-            list.add(apiService.getApod("QDITyi8e1uk6izr89dm7mpyfRG5kNSBCmmrZAqzY",sdf.format(calendar.getTime())).subscribeOn(Schedulers.io()));
-            calendar.add(Calendar.DATE,1);
-        }
+        List<Observable<GalleryItem>> list = getObservableList(date);
         Disposable disposable = Observable
                 .merge(list)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(item -> {
                     Log.v(TAG, item.toString());
                     listener.onGalleryItemsLoaded(item);
-                }, e -> Log.e(TAG, e.getLocalizedMessage()));
+                }, e -> listener.onError(e.getLocalizedMessage()));
         return disposable;
+    }
+
+    private List<Observable<GalleryItem>> getObservableList(@Nullable String date) {
+        List<Observable<GalleryItem>> list = new ArrayList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        Date fromDate;
+        try {
+            fromDate = sdf.parse(date);
+        } catch (ParseException | NullPointerException e) {
+            fromDate = new Date();
+        }
+        fromDate.setMonth(fromDate.getMonth()-1);
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(fromDate);
+        for (int i = 0; i < 30; i++) {
+            list.add(apiService.getApod(Constants.API_KEY,sdf.format(calendar.getTime())).subscribeOn(Schedulers.io()));
+            calendar.add(Calendar.DATE,1);
+        }
+        return list;
     }
 }

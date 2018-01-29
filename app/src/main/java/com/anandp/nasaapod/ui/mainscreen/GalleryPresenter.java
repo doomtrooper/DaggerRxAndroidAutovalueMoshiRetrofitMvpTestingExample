@@ -2,7 +2,6 @@ package com.anandp.nasaapod.ui.mainscreen;
 
 import com.anandp.nasaapod.data.GalleryItem;
 import com.anandp.nasaapod.data.Repository;
-import com.anandp.nasaapod.data.RepositoryImpl;
 
 import io.reactivex.disposables.Disposable;
 
@@ -16,8 +15,8 @@ public class GalleryPresenter implements GalleryContract.Presenter, Repository.L
     private Repository mRepository;
     private Disposable request;
 
-    GalleryPresenter() {
-        mRepository = new RepositoryImpl();
+    public GalleryPresenter(Repository mRepository) {
+        this.mRepository = mRepository;
     }
 
     @Override
@@ -38,11 +37,14 @@ public class GalleryPresenter implements GalleryContract.Presenter, Repository.L
 
     @Override
     public void onGalleryItemsLoaded(GalleryItem item) {
+        mView.showErrorView(false);
+        mView.setLoadingIndicator(false);
+        mView.showItems(true);
         mView.addGalleryItem(item);
     }
 
     @Override
     public void onError(String error) {
-
+        mView.showError(error);
     }
 }
