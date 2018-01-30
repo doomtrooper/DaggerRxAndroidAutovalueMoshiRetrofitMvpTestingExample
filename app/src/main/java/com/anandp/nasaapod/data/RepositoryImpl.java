@@ -5,7 +5,6 @@ import android.util.Log;
 import com.anandp.nasaapod.ApiService;
 import com.anandp.nasaapod.NasaApodApp;
 import com.anandp.nasaapod.utils.Constants;
-import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,11 +33,25 @@ public class RepositoryImpl implements Repository {
 
     @Inject
     ApiService apiService;
-    @Inject
-    Picasso picasso;
 
     @Override
-    public Disposable getApodForDate(@Nullable String date, final LoadApodCallback listener) {
+    public Disposable getApodForDate(String date, LoadApodCallback listener) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        Date fromDate;
+        try {
+            fromDate = sdf.parse(date);
+        } catch (ParseException | NullPointerException e) {
+            fromDate = new Date();
+        }
+        return getObservable(sdf.format(fromDate))
+                .subscribe(item -> {
+                    Log.v(TAG, item.toString());
+                    listener.onGalleryItemsLoaded(item);
+                }, e -> listener.onError(e.getLocalizedMessage()));
+    }
+
+    @Override
+    public Disposable getApodForMonth(@Nullable String date, final LoadApodCallback listener) {
         NasaApodApp.getAppContext().getRootComponent().inject(this);
         List<Observable<GalleryItem>> list = getObservableList(date);
         Disposable disposable = Observable
@@ -64,9 +77,16 @@ public class RepositoryImpl implements Repository {
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(fromDate);
         for (int i = 0; i < 30; i++) {
-            list.add(apiService.getApod(Constants.API_KEY,sdf.format(calendar.getTime())).subscribeOn(Schedulers.io()));
+            list.add(getObservable(sdf.format(calendar.getTime())));
             calendar.add(Calendar.DATE,1);
         }
         return list;
     }
+
+    public Observable<GalleryItem> getObservable(@Nullable String date){
+        return apiService.getApod(Constants.API_KEY, date)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread());
+    }
+
 }

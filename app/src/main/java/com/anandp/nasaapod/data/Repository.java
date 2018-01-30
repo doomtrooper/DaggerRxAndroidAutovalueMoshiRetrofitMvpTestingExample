@@ -8,6 +8,7 @@ import io.reactivex.disposables.Disposable;
  */
 
 public interface Repository {
+    Disposable getApodForMonth(@Nullable String date, LoadApodCallback listener);
     Disposable getApodForDate(@Nullable String date, LoadApodCallback listener);
 
 

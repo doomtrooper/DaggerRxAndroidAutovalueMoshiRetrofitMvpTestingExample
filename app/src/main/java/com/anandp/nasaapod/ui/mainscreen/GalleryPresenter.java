@@ -21,7 +21,7 @@ public class GalleryPresenter implements GalleryContract.Presenter, Repository.L
 
     @Override
     public void loadGalleryItems() {
-        request = mRepository.getApodForDate(null, this);
+        request = mRepository.getApodForMonth(null, this);
     }
 
     @Override
