@@ -1,5 +1,7 @@
 package com.anandp.nasaapod.ui.mainscreen;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -86,6 +88,12 @@ public class GalleryFragment extends Fragment implements GalleryContract.View {
         if (mAdapter.getItemCount()<=0) mPresenter.loadGalleryItems();
     }
 
+    @OnClick(R.id.retry_button)
+    void onRetryClick(){
+        mPresenter.loadGalleryItems();
+    }
+
+    @TargetApi(23)
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -93,6 +101,18 @@ public class GalleryFragment extends Fragment implements GalleryContract.View {
             mListener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @SuppressWarnings("Deprecation")
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) activity;
+        } else {
+            throw new RuntimeException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
     }
