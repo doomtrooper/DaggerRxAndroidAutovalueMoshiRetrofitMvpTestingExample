@@ -1,13 +1,13 @@
 package com.anandp.nasaapod.di;
 
+import android.app.Application;
+
 import com.anandp.nasaapod.NasaApodApp;
-import com.anandp.nasaapod.data.RepositoryImpl;
-import com.anandp.nasaapod.ui.HomeActivity;
-import com.anandp.nasaapod.ui.mainscreen.GalleryHolder;
-import com.anandp.nasaapod.ui.mainscreen.GalleryPresenter;
+import com.anandp.nasaapod.ui.mainscreen.GalleryComponent;
 
 import javax.inject.Singleton;
 
+import dagger.BindsInstance;
 import dagger.Component;
 
 /**
@@ -15,11 +15,18 @@ import dagger.Component;
  */
 
 @Singleton
-@Component(modules = {RootModule.class, AppModule.class})
+@Component(modules = {RootModule.class})
 public interface RootComponent {
     void inject(NasaApodApp app);
-    void inject(HomeActivity activity);
-    void inject(GalleryPresenter presenter);
-    void inject(RepositoryImpl repository);
-    void inject(GalleryHolder holder);
+
+    GalleryComponent.Builder galleryBuilder();
+
+    @Component.Builder
+    interface Builder{
+        RootComponent build();
+        @BindsInstance
+        Builder application(Application application);
+        @BindsInstance
+        Builder baseUrl(String baseUrl);
+    }
 }

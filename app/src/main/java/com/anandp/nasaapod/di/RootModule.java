@@ -25,15 +25,8 @@ import retrofit2.converter.moshi.MoshiConverterFactory;
  */
 @Module
 public class RootModule {
-    String mBaseUrl;
-
-    // Constructor needs one parameter to instantiate.
-    public RootModule(String baseUrl) {
-        this.mBaseUrl = baseUrl;
-    }
 
     // Dagger will only look for methods annotated with @Provides
-
     @Singleton
     @Provides
     Picasso providePicasso(Application application){
@@ -77,14 +70,13 @@ public class RootModule {
 
     @Provides
     @Singleton
-    Retrofit provideRetrofit(Moshi moshi, OkHttpClient okHttpClient) {
-        Retrofit retrofit = new Retrofit.Builder()
+    Retrofit provideRetrofit(Moshi moshi, OkHttpClient okHttpClient, String baseUrl) {
+        return new Retrofit.Builder()
                 .addConverterFactory(MoshiConverterFactory.create(moshi))
-                .baseUrl(mBaseUrl)
+                .baseUrl(baseUrl)
                 .client(okHttpClient)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
-        return retrofit;
     }
 
     @Provides

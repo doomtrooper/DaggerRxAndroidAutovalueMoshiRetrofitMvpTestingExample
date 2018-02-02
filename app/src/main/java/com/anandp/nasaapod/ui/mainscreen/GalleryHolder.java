@@ -24,7 +24,7 @@ public class GalleryHolder extends RecyclerView.ViewHolder {
     ImageView imageView;
     public GalleryHolder(View itemView) {
         super(itemView);
-        NasaApodApp.getAppContext().getRootComponent().inject(this);
+        NasaApodApp.getAppContext().getRootComponent().galleryBuilder().build().inject(this);
         ButterKnife.bind(this, itemView);
     }
 

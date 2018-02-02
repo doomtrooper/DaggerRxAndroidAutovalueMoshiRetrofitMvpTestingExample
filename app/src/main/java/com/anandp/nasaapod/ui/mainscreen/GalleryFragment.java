@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.anandp.nasaapod.NasaApodApp;
 import com.anandp.nasaapod.R;
 import com.anandp.nasaapod.data.GalleryItem;
 
@@ -66,7 +67,7 @@ public class GalleryFragment extends Fragment implements GalleryContract.View {
         View view = inflater.inflate(R.layout.fragment_gallery, container, false);
         unbinder = ButterKnife.bind(this, view);
         //mPresenter = new GalleryPresenter();
-        DaggerGalleryComponent.builder().galleryModule(new GalleryModule()).build().inject(this);
+        NasaApodApp.getAppContext().getRootComponent().galleryBuilder().build().inject(this);
         return view;
     }
 

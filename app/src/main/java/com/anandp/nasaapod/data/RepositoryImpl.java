@@ -52,7 +52,7 @@ public class RepositoryImpl implements Repository {
 
     @Override
     public Disposable getApodForMonth(@Nullable String date, final LoadApodCallback listener) {
-        NasaApodApp.getAppContext().getRootComponent().inject(this);
+        NasaApodApp.getAppContext().getRootComponent().galleryBuilder().build().inject(this);
         List<Observable<GalleryItem>> list = getObservableList(date);
         Disposable disposable = Observable
                 .merge(list)
