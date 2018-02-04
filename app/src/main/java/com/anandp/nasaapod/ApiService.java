@@ -2,7 +2,7 @@ package com.anandp.nasaapod;
 
 import com.anandp.nasaapod.data.GalleryItem;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
@@ -13,5 +13,5 @@ import retrofit2.http.Query;
 public interface ApiService {
 
     @GET("planetary/apod")
-    Observable<GalleryItem> getApod(@Query("api_key") String apiKey, @Query("date") String date);
+    Single<GalleryItem> getApod(@Query("api_key") String apiKey, @Query("date") String date);
 }

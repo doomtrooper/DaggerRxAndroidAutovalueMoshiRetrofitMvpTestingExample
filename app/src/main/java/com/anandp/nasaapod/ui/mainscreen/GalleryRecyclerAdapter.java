@@ -31,7 +31,7 @@ public class GalleryRecyclerAdapter extends RecyclerView.Adapter<GalleryHolder>{
     //list should be sorted at all times
     private List<GalleryItem> mGalleryItems;
 
-    public GalleryRecyclerAdapter(@NonNull List<GalleryItem> mGalleryItems) {
+    GalleryRecyclerAdapter(@NonNull List<GalleryItem> mGalleryItems) {
         Collections.sort(mGalleryItems, (item1, item2) -> Utility.comapreDates(item1.date(), item2.date()));
         this.mGalleryItems = mGalleryItems;
     }
@@ -52,7 +52,7 @@ public class GalleryRecyclerAdapter extends RecyclerView.Adapter<GalleryHolder>{
         return mGalleryItems.size();
     }
 
-    public void addGalleryItems(GalleryItem galleryItem){
+    void addGalleryItems(GalleryItem galleryItem){
         synchronized (this){
             Observable.create((ObservableOnSubscribe<Integer>) e -> {
                 if (mGalleryItems == null) e.onError(new IllegalStateException("List is NULL"));
@@ -74,6 +74,13 @@ public class GalleryRecyclerAdapter extends RecyclerView.Adapter<GalleryHolder>{
                         mGalleryItems.add(position, galleryItem);
                         notifyItemInserted(position);
                     }, e -> Log.e(TAG, e.getMessage()));
+        }
+    }
+
+    void addGalleryItems(List<GalleryItem> items) {
+        for (GalleryItem item:items){
+            mGalleryItems.add(item);
+            notifyItemInserted(mGalleryItems.size()-1);
         }
     }
 }

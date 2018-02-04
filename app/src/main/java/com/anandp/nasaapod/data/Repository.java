@@ -1,5 +1,7 @@
 package com.anandp.nasaapod.data;
 
+import java.util.List;
+
 import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 
@@ -15,5 +17,6 @@ public interface Repository {
     interface LoadApodCallback{
         void onGalleryItemsLoaded(GalleryItem item);
         void onError(String error);
+        void onGalleryItemsLoaded(List<GalleryItem> items);
     }
 }

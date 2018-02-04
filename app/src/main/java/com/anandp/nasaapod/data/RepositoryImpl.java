@@ -1,9 +1,8 @@
 package com.anandp.nasaapod.data;
 
-import android.util.Log;
-
 import com.anandp.nasaapod.ApiService;
 import com.anandp.nasaapod.NasaApodApp;
+import com.anandp.nasaapod.data.model.GalleryItem;
 import com.anandp.nasaapod.utils.Constants;
 
 import java.text.ParseException;
@@ -17,7 +16,7 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
@@ -43,29 +42,34 @@ public class RepositoryImpl implements Repository {
         } catch (ParseException | NullPointerException e) {
             fromDate = new Date();
         }
-        return getObservable(sdf.format(fromDate))
-                .subscribe(item -> {
-                    Log.v(TAG, item.toString());
-                    listener.onGalleryItemsLoaded(item);
-                }, e -> listener.onError(e.getLocalizedMessage()));
+        return getSingle(sdf.format(fromDate))
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnError(erro -> listener.onError(erro.getMessage()))
+                .doOnSuccess(item -> listener.onGalleryItemsLoaded(item))
+                .subscribe();
     }
 
     @Override
     public Disposable getApodForMonth(@Nullable String date, final LoadApodCallback listener) {
         NasaApodApp.getAppContext().getRootComponent().galleryBuilder().build().inject(this);
-        List<Observable<GalleryItem>> list = getObservableList(date);
-        Disposable disposable = Observable
-                .merge(list)
+        List<Single<GalleryItem>> list = getSingleList(date);
+        return Single.zip(list, objects -> {
+                    List<GalleryItem> galleryItemList = new ArrayList<>();
+                    for (Object object : objects) {
+                        galleryItemList.add((GalleryItem) object);
+                    }
+                    return galleryItemList;
+                })
+                .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(item -> {
-                    Log.v(TAG, item.toString());
-                    listener.onGalleryItemsLoaded(item);
-                }, e -> listener.onError(e.getLocalizedMessage()));
-        return disposable;
+                .doOnSuccess(items -> listener.onGalleryItemsLoaded(items))
+                .doOnError(e -> listener.onError(e.getLocalizedMessage()))
+                .subscribe();
     }
 
-    private List<Observable<GalleryItem>> getObservableList(@Nullable String date) {
-        List<Observable<GalleryItem>> list = new ArrayList<>();
+    private List<Single<GalleryItem>> getSingleList(@Nullable String date) {
+        List<Single<GalleryItem>> list = new ArrayList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         Date fromDate;
         try {
@@ -76,17 +80,16 @@ public class RepositoryImpl implements Repository {
         fromDate.setMonth(fromDate.getMonth()-1);
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(fromDate);
-        for (int i = 0; i < 30; i++) {
-            list.add(getObservable(sdf.format(calendar.getTime())));
+        for (int i = 0; i < 15; i++) {
+            list.add(getSingle(sdf.format(calendar.getTime())));
             calendar.add(Calendar.DATE,1);
         }
+        //list.add(getSingle("2020-11-11"));
         return list;
     }
 
-    public Observable<GalleryItem> getObservable(@Nullable String date){
-        return apiService.getApod(Constants.API_KEY, date)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.newThread());
+    public Single<GalleryItem> getSingle(@Nullable String date){
+        return apiService.getApod(Constants.API_KEY, date);
     }
 
 }

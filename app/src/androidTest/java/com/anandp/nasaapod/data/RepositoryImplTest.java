@@ -30,7 +30,7 @@ public class RepositoryImplTest {
     public void testGetApod(){
         GalleryItem galleryItem = GalleryItem.create("2018-01-29", "For scale, the more compact NGC 1931 (Fly) is about 10 light-years across.","https://apod.nasa.gov/apod/image/1801/SpiderandFly_Morris_1000.jpg", "image", "v1","Spider ","https://apod.nasa.gov/apod/image/1801/SpiderandFly_Morris_960.jpg");
         when(apiService.getApod(Constants.API_KEY, "2018-01-29")).thenReturn(Observable.just(galleryItem));
-        TestObserver<GalleryItem> testObserver = repository.getObservable("2018-01-29").test();
+        TestObserver<GalleryItem> testObserver = repository.getSingle("2018-01-29").test();
         testObserver.awaitTerminalEvent();
         testObserver.assertNoErrors();
         testObserver.assertValue(galleryItem);

@@ -20,6 +20,7 @@ import com.anandp.nasaapod.R;
 import com.anandp.nasaapod.data.GalleryItem;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -170,6 +171,11 @@ public class GalleryFragment extends Fragment implements GalleryContract.View {
     @Override
     public void addGalleryItem(GalleryItem item) {
         mAdapter.addGalleryItems(item);
+    }
+
+    @Override
+    public void addGalleryItem(List<GalleryItem> items) {
+        mAdapter.addGalleryItems(items);
     }
 
     @OnClick(R.id.retry_button)

@@ -46,6 +46,7 @@ dependencies {
             "com.google.dagger:dagger-compiler:$depVersions.dagger",
             "com.ryanharter.auto.value:auto-value-moshi:$depVersions.autoValueMoshi",
             "com.jakewharton:butterknife-compiler:$depVersions.butterknife",
+            'com.ryanharter.auto.value:auto-value-parcel:0.2.6'
     )
     implementation(
             "com.android.support:appcompat-v7:$depVersions.supportLib",

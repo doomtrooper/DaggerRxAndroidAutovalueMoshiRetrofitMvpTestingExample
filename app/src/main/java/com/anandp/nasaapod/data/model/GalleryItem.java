@@ -1,5 +1,6 @@
 package com.anandp.nasaapod.data;
 
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
@@ -12,7 +13,7 @@ import com.squareup.moshi.Moshi;
  */
 
 @AutoValue
-public abstract class GalleryItem {
+public abstract class GalleryItem implements Parcelable{
     @Json(name = "date")
     public abstract String date();
     @Nullable
