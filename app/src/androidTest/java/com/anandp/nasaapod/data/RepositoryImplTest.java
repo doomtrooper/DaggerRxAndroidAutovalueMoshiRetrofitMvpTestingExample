@@ -1,6 +1,7 @@
 package com.anandp.nasaapod.data;
 
 import com.anandp.nasaapod.ApiService;
+import com.anandp.nasaapod.data.model.GalleryItem;
 import com.anandp.nasaapod.utils.Constants;
 
 import org.junit.Rule;

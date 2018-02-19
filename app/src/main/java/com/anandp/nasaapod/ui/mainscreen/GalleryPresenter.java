@@ -1,6 +1,6 @@
 package com.anandp.nasaapod.ui.mainscreen;
 
-import com.anandp.nasaapod.data.GalleryItem;
+import com.anandp.nasaapod.data.model.GalleryItem;
 import com.anandp.nasaapod.data.Repository;
 
 import java.util.List;

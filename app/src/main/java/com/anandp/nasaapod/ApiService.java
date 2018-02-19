@@ -1,6 +1,6 @@
 package com.anandp.nasaapod;
 
-import com.anandp.nasaapod.data.GalleryItem;
+import com.anandp.nasaapod.data.model.GalleryItem;
 
 import io.reactivex.Single;
 import retrofit2.http.GET;

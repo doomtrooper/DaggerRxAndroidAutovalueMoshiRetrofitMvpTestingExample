@@ -1,5 +1,6 @@
 package com.anandp.nasaapod.data;
 
+import com.anandp.nasaapod.data.model.GalleryItem;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 

@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.anandp.nasaapod.R;
-import com.anandp.nasaapod.data.GalleryItem;
+import com.anandp.nasaapod.data.model.GalleryItem;
 import com.anandp.nasaapod.exceptions.SameElementInsertedException;
 import com.anandp.nasaapod.utils.Utility;
 

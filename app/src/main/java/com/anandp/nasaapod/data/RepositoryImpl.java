@@ -33,6 +33,7 @@ public class RepositoryImpl implements Repository {
     @Inject
     ApiService apiService;
 
+
     @Override
     public Disposable getApodForDate(String date, LoadApodCallback listener) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);

@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import com.anandp.nasaapod.NasaApodApp;
 import com.anandp.nasaapod.R;
-import com.anandp.nasaapod.data.GalleryItem;
+import com.anandp.nasaapod.data.model.GalleryItem;
 
 import java.util.ArrayList;
 import java.util.List;

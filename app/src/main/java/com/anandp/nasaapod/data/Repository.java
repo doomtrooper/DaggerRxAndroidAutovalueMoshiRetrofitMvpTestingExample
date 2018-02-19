@@ -1,5 +1,7 @@
 package com.anandp.nasaapod.data;
 
+import com.anandp.nasaapod.data.model.GalleryItem;
+
 import java.util.List;
 
 import io.reactivex.annotations.Nullable;
