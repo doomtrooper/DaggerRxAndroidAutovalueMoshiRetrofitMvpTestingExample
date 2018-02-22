@@ -56,9 +56,6 @@ public abstract class GalleryItem implements Parcelable{
     @Json(name = "url")
     public abstract String url();
 
-    public GalleryItem() {
-    }
-
 
     public static GalleryItem create(String date, String explanation, String hdurl, String mediaType, String serviceVersion, String title, String url) {
         return new AutoValue_GalleryItem(date, explanation, hdurl, mediaType, serviceVersion, title, url);
