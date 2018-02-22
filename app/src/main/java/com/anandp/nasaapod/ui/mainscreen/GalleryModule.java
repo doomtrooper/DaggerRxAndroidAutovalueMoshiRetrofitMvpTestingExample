@@ -13,15 +13,9 @@ import dagger.Provides;
 @Module
 public class GalleryModule {
 
-    @Provides
-    @FragmentScope
-    RepositoryImpl providesRepository(){
-        return new RepositoryImpl();
-    }
-
     @FragmentScope
     @Provides
-    GalleryPresenter providesGalleryPresenter(RepositoryImpl repository){
-        return new GalleryPresenter(repository);
+    GalleryContract.Presenter providesGalleryPresenter(GalleryPresenter presenter){
+        return presenter;
     }
 }

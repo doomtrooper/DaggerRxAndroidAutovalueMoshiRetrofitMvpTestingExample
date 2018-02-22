@@ -4,6 +4,7 @@ import com.anandp.nasaapod.data.model.GalleryItem;
 
 import java.util.List;
 
+import io.reactivex.Single;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 
@@ -12,7 +13,7 @@ import io.reactivex.disposables.Disposable;
  */
 
 public interface Repository {
-    Disposable getApodForMonth(@Nullable String date, LoadApodCallback listener);
+    Single<List<GalleryItem>> getApodForMonth(@Nullable String date);
     Disposable getApodForDate(@Nullable String date, LoadApodCallback listener);
 
 

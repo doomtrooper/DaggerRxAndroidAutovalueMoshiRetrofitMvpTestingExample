@@ -5,25 +5,43 @@ import com.anandp.nasaapod.data.Repository;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Anand Parshuramka on 23/01/18.
  */
 
-public class GalleryPresenter implements GalleryContract.Presenter, Repository.LoadApodCallback {
+public class GalleryPresenter implements GalleryContract.Presenter {
 
     private GalleryContract.View mView;
     private Repository mRepository;
-    private Disposable request;
+    private CompositeDisposable compositeDisposable;
 
+
+    @Inject
     public GalleryPresenter(Repository mRepository) {
         this.mRepository = mRepository;
+        compositeDisposable = new CompositeDisposable();
     }
 
     @Override
     public void loadGalleryItems() {
-        request = mRepository.getApodForMonth(null, this);
+        compositeDisposable.add(mRepository.getApodForMonth(null)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(galleryItems -> {
+                    mView.showErrorView(false);
+                    mView.setLoadingIndicator(false);
+                    mView.showItems(true);
+                    mView.addGalleryItem(galleryItems);
+                }, throwable -> mView.showError(throwable.getMessage())));
     }
 
     @Override
@@ -33,28 +51,7 @@ public class GalleryPresenter implements GalleryContract.Presenter, Repository.L
 
     @Override
     public void dropView() {
-        if (request!=null && !request.isDisposed()) request.dispose();
+        compositeDisposable.dispose();
         mView = null;
-    }
-
-    @Override
-    public void onGalleryItemsLoaded(GalleryItem item) {
-        mView.showErrorView(false);
-        mView.setLoadingIndicator(false);
-        mView.showItems(true);
-        mView.addGalleryItem(item);
-    }
-
-    @Override
-    public void onGalleryItemsLoaded(List<GalleryItem> items) {
-        mView.showErrorView(false);
-        mView.setLoadingIndicator(false);
-        mView.showItems(true);
-        mView.addGalleryItem(items);
-    }
-
-    @Override
-    public void onError(String error) {
-        mView.showError(error);
     }
 }

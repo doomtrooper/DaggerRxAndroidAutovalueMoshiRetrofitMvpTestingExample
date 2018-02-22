@@ -1,4 +1,4 @@
-package com.anandp.nasaapod.di;
+package com.anandp.nasaapod.GalleryFragmentTest;
 
 import android.app.Application;
 import android.arch.persistence.db.SupportSQLiteOpenHelper;
@@ -18,6 +18,8 @@ import com.squareup.picasso.Picasso;
 import com.squareup.sqlbrite3.BriteDatabase;
 import com.squareup.sqlbrite3.SqlBrite;
 
+import org.mockito.Mockito;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -31,12 +33,26 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 
 /**
- * Created by Anand Parshuramka on 23/01/18.
+ * Created by @iamBedant on 20/02/18.
  */
 @Module
-public class RootModule {
+public class TestRootModule {
 
     // Dagger will only look for methods annotated with @Provides
+
+
+
+    private final Application mApplication;
+
+    public TestRootModule(Application application) {
+        mApplication = application;
+    }
+
+    @Provides
+    Application provideApplication() {
+        return mApplication;
+    }
+
     @Singleton
     @Provides
     Picasso providePicasso(Application application){
@@ -68,6 +84,12 @@ public class RootModule {
     }
 
 
+    @Provides
+    @Singleton
+    Repository providesRepository(){
+        return Mockito.mock(RepositoryImpl.class);
+    }
+
 
 
     @Provides
@@ -79,6 +101,12 @@ public class RootModule {
         client.addInterceptor(logging);
         client.cache(cache);
         return client.build();
+    }
+
+
+    @Provides
+    String provideBaseUrl(){
+        return "https://api.nasa.gov/";
     }
 
     @Provides
@@ -95,12 +123,6 @@ public class RootModule {
     @Provides
     ApiService provideApiService(Retrofit retrofit){
         return retrofit.create(ApiService.class);
-    }
-
-    @Provides
-    @Singleton
-    Repository providesRepository(RepositoryImpl repository){
-        return repository;
     }
 
     @Provides
