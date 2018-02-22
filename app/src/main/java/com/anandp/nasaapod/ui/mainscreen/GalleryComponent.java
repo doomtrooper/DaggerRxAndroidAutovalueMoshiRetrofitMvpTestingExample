@@ -1,5 +1,6 @@
 package com.anandp.nasaapod.ui.mainscreen;
 
+import com.anandp.nasaapod.data.Repository;
 import com.anandp.nasaapod.data.RepositoryImpl;
 import com.anandp.nasaapod.di.FragmentScope;
 
@@ -20,4 +21,5 @@ public interface GalleryComponent {
     interface Builder{
         GalleryComponent build();
     }
+
 }

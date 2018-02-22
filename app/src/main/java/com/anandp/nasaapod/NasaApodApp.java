@@ -31,4 +31,9 @@ public class NasaApodApp extends Application {
     public RootComponent getRootComponent() {
         return rootComponent;
     }
+
+    // Needed to replace the component with a test specific one
+    public void setComponent(RootComponent applicationComponent) {
+        rootComponent = applicationComponent;
+    }
 }

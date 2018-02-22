@@ -1,7 +1,6 @@
 package com.anandp.nasaapod.data;
 
 import com.anandp.nasaapod.ApiService;
-import com.anandp.nasaapod.NasaApodApp;
 import com.anandp.nasaapod.data.model.GalleryItem;
 import com.anandp.nasaapod.utils.Constants;
 
@@ -30,9 +29,12 @@ public class RepositoryImpl implements Repository {
 
     public static String TAG = RepositoryImpl.class.getSimpleName();
 
-    @Inject
     ApiService apiService;
 
+    @Inject
+    public RepositoryImpl(ApiService apiService) {
+        this.apiService = apiService;
+    }
 
     @Override
     public Disposable getApodForDate(String date, LoadApodCallback listener) {
@@ -52,21 +54,17 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
-    public Disposable getApodForMonth(@Nullable String date, final LoadApodCallback listener) {
-        NasaApodApp.getAppContext().getRootComponent().galleryBuilder().build().inject(this);
+    public Single<List<GalleryItem>> getApodForMonth(@Nullable String date) {
+
         List<Single<GalleryItem>> list = getSingleList(date);
+
         return Single.zip(list, objects -> {
-                    List<GalleryItem> galleryItemList = new ArrayList<>();
-                    for (Object object : objects) {
-                        galleryItemList.add((GalleryItem) object);
-                    }
-                    return galleryItemList;
-                })
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSuccess(items -> listener.onGalleryItemsLoaded(items))
-                .doOnError(e -> listener.onError(e.getLocalizedMessage()))
-                .subscribe();
+            List<GalleryItem> galleryItemList = new ArrayList<>();
+            for (Object object : objects) {
+                galleryItemList.add((GalleryItem) object);
+            }
+            return galleryItemList;
+        });
     }
 
     private List<Single<GalleryItem>> getSingleList(@Nullable String date) {
@@ -78,18 +76,18 @@ public class RepositoryImpl implements Repository {
         } catch (ParseException | NullPointerException e) {
             fromDate = new Date();
         }
-        fromDate.setMonth(fromDate.getMonth()-1);
+        fromDate.setMonth(fromDate.getMonth() - 1);
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(fromDate);
         for (int i = 0; i < 15; i++) {
             list.add(getSingle(sdf.format(calendar.getTime())));
-            calendar.add(Calendar.DATE,1);
+            calendar.add(Calendar.DATE, 1);
         }
         //list.add(getSingle("2020-11-11"));
         return list;
     }
 
-    public Single<GalleryItem> getSingle(@Nullable String date){
+    public Single<GalleryItem> getSingle(@Nullable String date) {
         return apiService.getApod(Constants.API_KEY, date);
     }
 

@@ -3,6 +3,7 @@ package com.anandp.nasaapod.di;
 import android.app.Application;
 
 import com.anandp.nasaapod.NasaApodApp;
+import com.anandp.nasaapod.data.Repository;
 import com.anandp.nasaapod.ui.mainscreen.GalleryComponent;
 
 import javax.inject.Singleton;
@@ -29,4 +30,7 @@ public interface RootComponent {
         @BindsInstance
         Builder baseUrl(String baseUrl);
     }
+
+    Repository getRepository();
+
 }

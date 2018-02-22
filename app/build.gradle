@@ -8,7 +8,7 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.anandp.nasaapod.MyTestRunner"
     }
     buildTypes {
         release {
@@ -26,7 +26,7 @@ android {
 ext.depVersions = [
         autoValue     : '1.5.2',
         dagger        : '2.12',
-        supportLib    : '26.1.0',
+        supportLib    : '27.0.2',
         playServices  : '11.6.0',
         retrofit      : '2.3.0',
         autoValueMoshi: '0.4.4',
@@ -80,5 +80,25 @@ dependencies {
     androidTestImplementation('com.android.support.test:runner:1.0.1', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+
+
+
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "com.android.support.test:runner:$testRunnerVersion"
+    androidTestImplementation "com.android.support.test:rules:$testRunnerVersion"
+    androidTestImplementation "com.android.support:support-annotations:$supportLibraryVersion"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:$espressoVersion"
+    debugImplementation "com.android.support.test.espresso.idling:idling-concurrent:$espressoVersion"
+    androidTestImplementation "com.squareup.rx.idler:rx2-idler:$rxIdlerversion"
+    androidTestImplementation "com.android.support.test.espresso:espresso-contrib:$espressoVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
+    testAnnotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
+    androidTestAnnotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
+    androidTestImplementation "com.android.support.test.espresso:espresso-intents:$espressoVersion"
+    androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"
+    androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
+
+
+
     provided 'com.ryanharter.auto.value:auto-value-moshi-annotations:0.4.5'
 }
