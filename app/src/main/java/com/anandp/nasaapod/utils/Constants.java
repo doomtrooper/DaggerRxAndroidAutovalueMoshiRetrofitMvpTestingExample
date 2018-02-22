@@ -5,6 +5,6 @@ package com.anandp.nasaapod.utils;
  */
 
 public class Constants {
-    public static final String API_KEY = "QDITyi8e1uk6izr89dm7mpyfRG5kNSBCmmrZAqzY";
+    public static final String API_KEY = "ApiKey.API_KEY";
     public static final String DB_NAME = "nasa.apod";
 }
