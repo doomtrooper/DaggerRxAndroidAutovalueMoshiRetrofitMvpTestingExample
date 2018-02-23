@@ -13,6 +13,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by Anand Parshuramka on 23/01/18.
@@ -34,14 +35,19 @@ public class GalleryPresenter implements GalleryContract.Presenter {
     @Override
     public void loadGalleryItems() {
         compositeDisposable.add(mRepository.getApodForMonth(null)
-                .subscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(galleryItems -> {
+                .subscribe(galleryItem -> {
                     mView.showErrorView(false);
                     mView.setLoadingIndicator(false);
                     mView.showItems(true);
-                    mView.addGalleryItem(galleryItems);
-                }, throwable -> mView.showError(throwable.getMessage())));
+                    mView.addGalleryItem(galleryItem);
+                }, throwable -> {
+                    Timber.d(throwable.getMessage());
+                    mView.showError(throwable.getMessage());
+                }));
+
+
     }
 
     @Override
