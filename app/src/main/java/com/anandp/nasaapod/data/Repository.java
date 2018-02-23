@@ -3,7 +3,6 @@ package com.anandp.nasaapod.data;
 import com.anandp.nasaapod.data.model.GalleryItem;
 
 import java.util.List;
-
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.annotations.Nullable;

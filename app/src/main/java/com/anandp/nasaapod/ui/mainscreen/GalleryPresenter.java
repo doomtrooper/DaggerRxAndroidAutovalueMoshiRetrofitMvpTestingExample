@@ -13,8 +13,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
-
 /**
  * Created by Anand Parshuramka on 23/01/18.
  */
@@ -43,9 +41,9 @@ public class GalleryPresenter implements GalleryContract.Presenter {
                     mView.showItems(true);
                     mView.addGalleryItem(galleryItem);
                 }, throwable -> {
-                    Timber.d(throwable.getMessage());
                     mView.showError(throwable.getMessage());
                 }));
+
 
 
     }

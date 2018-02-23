@@ -25,6 +25,7 @@ import timber.log.Timber;
 
 public class RepositoryImpl implements Repository {
 
+
     ApiService apiService;
 
     @Inject
