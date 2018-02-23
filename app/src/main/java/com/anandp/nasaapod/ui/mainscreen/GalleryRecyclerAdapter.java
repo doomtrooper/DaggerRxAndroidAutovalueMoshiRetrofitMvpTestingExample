@@ -68,7 +68,7 @@ public class GalleryRecyclerAdapter extends RecyclerView.Adapter<GalleryHolder>{
                 }
                 e.onComplete();
             })
-                    .subscribeOn(Schedulers.newThread())
+                    .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(position -> {
                         mGalleryItems.add(position, galleryItem);

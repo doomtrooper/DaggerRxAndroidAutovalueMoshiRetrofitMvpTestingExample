@@ -3,23 +3,15 @@ package com.anandp.nasaapod.data;
 import com.anandp.nasaapod.data.model.GalleryItem;
 
 import java.util.List;
-
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.annotations.Nullable;
-import io.reactivex.disposables.Disposable;
 
 /**
  * Created by Anand Parshuramka on 23/01/18.
  */
 
 public interface Repository {
-    Single<List<GalleryItem>> getApodForMonth(@Nullable String date);
-    Disposable getApodForDate(@Nullable String date, LoadApodCallback listener);
-
-
-    interface LoadApodCallback{
-        void onGalleryItemsLoaded(GalleryItem item);
-        void onError(String error);
-        void onGalleryItemsLoaded(List<GalleryItem> items);
-    }
+    Observable<GalleryItem> getApodForMonth(@Nullable String date);
+    Single<GalleryItem> getApodForDate(@Nullable String date);
 }

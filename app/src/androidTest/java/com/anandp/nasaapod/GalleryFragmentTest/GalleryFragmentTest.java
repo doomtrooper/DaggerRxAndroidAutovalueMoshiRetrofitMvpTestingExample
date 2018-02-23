@@ -13,6 +13,8 @@ import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
@@ -42,6 +44,7 @@ public class GalleryFragmentTest {
 
     @Test
     public void shouldBeAbleToLaunchLoginScreen() {
+        when(component.getRepository().getApodForMonth(null)).thenReturn(getGalleryItems());
         launchActivity();
 //        intended(hasComponent(HomeActivity.class.getName()));
 //        Intents.intended(IntentMatchers.hasComponent(new ComponentName(getTargetContext(), HomeActivity.class)));
@@ -61,7 +64,7 @@ public class GalleryFragmentTest {
      */
     @Test
     public void shouldShowRecyclerview() {
-        when(component.getRepository().getApodForMonth(null)).thenReturn(Single.just(getGalleryItems()));
+        when(component.getRepository().getApodForMonth(null)).thenReturn(getGalleryItems());
         launchActivity();
         onView(withId(R.id.retry_button)).check(matches(not(isDisplayed())));
         onView(withId(R.id.error_tv)).check(matches(not(isDisplayed())));
@@ -77,7 +80,7 @@ public class GalleryFragmentTest {
      */
     @Test
     public void shouldShowErrorViewIfApiThrowsError(){
-        when(component.getRepository().getApodForMonth(null)).thenReturn(Single.error(new Exception("this is an exception")));
+        when(component.getRepository().getApodForMonth(null)).thenReturn(Observable.error(new Exception("this is an exception")));
         launchActivity();
         onView(withId(R.id.retry_button)).check(matches(isDisplayed()));
         onView(withId(R.id.error_tv)).check(matches(isDisplayed()));
@@ -89,11 +92,11 @@ public class GalleryFragmentTest {
      * Create Dummy data for test
      */
 
-    public List<GalleryItem> getGalleryItems() {
+    public Observable<GalleryItem> getGalleryItems() {
         List<GalleryItem> galleryList = new ArrayList<>();
         galleryList.add(GalleryItem.create("2018-01-27", "For scale, the more compact NGC 1931 (Fly) is about 10 light-years across.", "https://apod.nasa.gov/apod/image/1801/SpiderandFly_Morris_1000.jpg", "image", "v1", "The Spider and The Fly", "https://apod.nasa.gov/apod/image/1801/SpiderandFly_Morris_960.jpg"));
         galleryList.add(GalleryItem.create("2018-01-29", "For scale, the more compact NGC 1931 (Fly) is about 10 light-years across.", "https://apod.nasa.gov/apod/image/1801/SpiderandFly_Morris_1000.jpg", "image", "v1", "The Spider and The Fly", "https://apod.nasa.gov/apod/image/1801/SpiderandFly_Morris_960.jpg"));
-        return galleryList;
+        return Observable.fromIterable(galleryList);
     }
 
 }
