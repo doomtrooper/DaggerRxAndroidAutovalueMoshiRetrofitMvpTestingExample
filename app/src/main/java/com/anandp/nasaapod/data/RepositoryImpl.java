@@ -1,8 +1,12 @@
 package com.anandp.nasaapod.data;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
 import com.anandp.nasaapod.ApiService;
 import com.anandp.nasaapod.data.model.GalleryItem;
 import com.anandp.nasaapod.utils.Constants;
+import com.squareup.sqlbrite3.BriteDatabase;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,6 +19,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 
 /**
@@ -24,11 +29,13 @@ import io.reactivex.annotations.Nullable;
 public class RepositoryImpl implements Repository {
 
 
-    ApiService apiService;
+    private ApiService apiService;
+    private BriteDatabase db;
 
     @Inject
-    RepositoryImpl(ApiService apiService) {
+    public RepositoryImpl(ApiService apiService, BriteDatabase db) {
         this.apiService = apiService;
+        this.db = db;
     }
 
     @Override
@@ -49,9 +56,6 @@ public class RepositoryImpl implements Repository {
         return getImageObservable(date);
     }
 
-    private Single<GalleryItem> getSingle(@Nullable String date) {
-        return apiService.getApod(Constants.API_KEY, date);
-    }
 
     private Observable<GalleryItem> getImageObservable(@Nullable String date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
@@ -64,13 +68,49 @@ public class RepositoryImpl implements Repository {
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(fromDate);
         return Observable.create(emitter -> {
+            int[] count = new int[1];
             for (int i = 0; i < 15; i++) {
                 getSingle(sdf.format(calendar.getTime()))
-                        .subscribe(galleryItem -> emitter.onNext(galleryItem), throwable -> {});
+                        .subscribe(galleryItem -> {
+                            emitter.onNext(galleryItem);
+                        }, throwable -> {
+                            count[0]++;
+                            if (count[0]==15) emitter.onError(throwable);
+                        });
                 calendar.add(Calendar.DATE, -1);
             }
         });
     }
 
+    private Single<GalleryItem> getSingle(@NonNull String date) {
+        Observable<GalleryItem> localObs = Observable.create(emmiter -> getLocalItem(date)
+                .subscribe(galleryItem -> {
+                    if (galleryItem.date().equalsIgnoreCase("0")) emmiter.onComplete();
+                    else {
+                        emmiter.onNext(galleryItem);
+                        emmiter.onComplete();
+                    }
+                }, throwable -> {
+                }));
+        Observable<GalleryItem> remoteObs = Observable.create(emmiter -> getRemoteitem(date)
+                .subscribe(galleryItem -> emmiter.onNext(galleryItem), throwable -> emmiter.onError(throwable)));
+        return Observable.concat(localObs, remoteObs).firstOrError();
+    }
+
+    private Observable<GalleryItem> getLocalItem(@NonNull String date) {
+        return db.createQuery(GalleryItem.TABLE, "Select * from " + GalleryItem.TABLE + " where date='" + date + "'")
+                .map(query -> {
+                    Cursor cursor = query.run();
+                    if (cursor != null && cursor.moveToFirst()) {
+                        return GalleryItem.getGalleryItem(cursor);
+                    }
+                    return GalleryItem.dummyObject();
+                });
+    }
+
+    private Observable<GalleryItem> getRemoteitem(@NonNull String date) {
+        return apiService.getApodObservable(Constants.API_KEY, date)
+                .doOnNext(galleryItem -> db.insert(GalleryItem.TABLE, SQLiteDatabase.CONFLICT_REPLACE, GalleryItem.getContentValues(galleryItem)));
+    }
 
 }

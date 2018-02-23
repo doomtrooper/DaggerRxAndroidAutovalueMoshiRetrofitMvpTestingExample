@@ -1,6 +1,7 @@
 package com.anandp.nasaapod.data.model;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
@@ -46,8 +47,10 @@ public abstract class GalleryItem implements Parcelable{
     @Nullable
     @Json(name = "hdurl")
     public abstract String hdurl();
+    @Nullable
     @Json(name = "media_type")
     public abstract String mediaType();
+    @Nullable
     @Json(name = "service_version")
     public abstract String serviceVersion();
     @Json(name = "title")
@@ -71,40 +74,79 @@ public abstract class GalleryItem implements Parcelable{
         return date().equalsIgnoreCase(galleryItem.date());
     }
 
-    public static final class Builder{
+    public static Builder builder() {
+        return new AutoValue_GalleryItem.Builder();
+    }
+
+    public static GalleryItem getGalleryItem(Cursor cursor){
+        return GalleryItem.builder().setDate(cursor.getString(cursor.getColumnIndex(GalleryItem.DATE)))
+                .setTitle(cursor.getString(cursor.getColumnIndex(GalleryItem.TITLE)))
+                .setExplanation(cursor.getString(cursor.getColumnIndex(GalleryItem.EXPLANATION)))
+                .setHdurl(cursor.getString(cursor.getColumnIndex(GalleryItem.HD_URL)))
+                .setUrl(cursor.getString(cursor.getColumnIndex(GalleryItem.URL)))
+                .setMediaType(cursor.getString(cursor.getColumnIndex(GalleryItem.MEDIA_TYPE)))
+                .setServiceVersion(cursor.getString(cursor.getColumnIndex(GalleryItem.SERVICE_VERSION)))
+                .build();
+    }
+
+    public static ContentValues getContentValues(GalleryItem galleryItem){
+        return new GalleryItem.ContentBuilder()
+                .date(galleryItem.date())
+                .title(galleryItem.title())
+                .explanation(galleryItem.explanation())
+                .hdUrl(galleryItem.hdurl())
+                .url(galleryItem.url())
+                .mediaType(galleryItem.mediaType())
+                .serviceVersion(galleryItem.serviceVersion())
+                .build();
+    }
+
+    @AutoValue.Builder
+    public abstract static class Builder {
+        public abstract Builder setDate(String value);
+        public abstract Builder setExplanation(String value);
+        public abstract Builder setHdurl(String value);
+        public abstract Builder setMediaType(String value);
+        public abstract Builder setServiceVersion(String value);
+        public abstract Builder setTitle(String value);
+        public abstract Builder setUrl(String value);
+        public abstract GalleryItem build();
+    }
+
+    public static final class ContentBuilder{
         private final ContentValues values = new ContentValues();
 
-        public Builder date(String date){
+        public ContentBuilder date(String date){
             values.put(DATE, date);
             return this;
         }
 
-        public Builder explanation(String explanantion){
+        public ContentBuilder explanation(String explanantion){
             values.put(EXPLANATION, explanantion);
             return this;
         }
 
-        public Builder hdUrl(String hdUrl){
+        public ContentBuilder hdUrl(String hdUrl){
             values.put(HD_URL, hdUrl);
             return this;
         }
 
-        public Builder mediaType(String mediaType){
+        public ContentBuilder mediaType(String mediaType){
             values.put(MEDIA_TYPE, mediaType);
             return this;
         }
 
-        public Builder serviceVersion(String serviceVersion){
+        public ContentBuilder serviceVersion(String serviceVersion){
             values.put(SERVICE_VERSION, serviceVersion);
             return this;
         }
 
-        public Builder title(String title){
+        public ContentBuilder title(String title){
             values.put(TITLE, title);
             return this;
         }
 
-        public Builder url(String url){
+        public ContentBuilder url(String url){
             values.put(URL, url);
             return this;
         }
@@ -114,5 +156,8 @@ public abstract class GalleryItem implements Parcelable{
         }
     }
 
+    public static GalleryItem dummyObject(){
+        return GalleryItem.builder().setDate("0").setTitle("asdf").build();
+    }
 
 }

@@ -180,6 +180,10 @@ public class GalleryFragment extends Fragment implements GalleryContract.View {
 
     @OnClick(R.id.retry_button)
     public void onViewClicked() {
+        showItems(false);
+        showErrorView(false);
+        setLoadingIndicator(true);
+        mPresenter.loadGalleryItems();
     }
 
     public interface OnFragmentInteractionListener {
